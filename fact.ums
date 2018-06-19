@@ -1,0 +1,32 @@
+      .section text
+      .zero r0
+      .temp r6, r7
+
+//
+// fact computes the factorial of it's input.
+// Parameters:  The argument value, n, is on top of the stack
+// Return:      The factorial of n in r1
+//
+
+fact:
+      push r1 on stack r2      // save return address
+      push r3 on stack r2      // save nonvolatile register
+      r3 := m[r0][r2 + 2]      // first parameter 'n'
+
+      if (r3 == 0) goto base_case
+
+      // recursive call
+      r5 := r3 - 1             // OK to step on volatile register
+      push r5 on stack r2      // now (n - 1) is a paraemter
+      goto fact linking r1     // make the recursive call
+      pop stack r2             // pop parameter
+      r1 := r3 * r1            // final answer
+      goto finish_fact
+
+base_case:
+      r1 := 1
+
+finish_fact:
+      pop r3 off stack r2      // restore saved register
+      pop r5 off stack r2      // put return address in r5
+      goto r5                 

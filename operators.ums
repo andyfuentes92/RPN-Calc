@@ -1,0 +1,56 @@
+#
+# Homework 8:RPN Calc
+# 4/30/18
+# Andres Fuentes and Ruchelly Almeida
+# operators.ums: Module containing implementation of the RPN calc functions 
+# n, space, newline, s, d, p z   
+#
+
+      .zero r0
+      .temps r6, r7
+      .section text
+
+newline:
+       output "in newline\n"
+       r4 := r3                          //Store valuestack ptr
+
+newlineloop:
+       .temp r5,r6,r7
+       if (r3 == valuestack) goto endnewline
+       .temp r6,r7
+
+       r5 := m[r0][r3]
+       output ">>> "
+       output r5
+       output "\n"
+       r3 := r3 + 1
+       goto newlineloop
+       
+endnewline:
+        r3 := r4
+        goto waiting 
+
+##############################  space    #######################################
+
+space:
+        goto waiting 
+
+check1:
+        output "in check1"
+        .temp r5,r6,r7
+        if (r3 >s valuestack) goto check2        //pass check1 -> go to check2
+        output "failed check1d!\n"
+        goto waiting                            //fail check1 -> go to waiting
+
+check2:
+        push r5 on stack r2 
+        push r4 on stack r2
+        r5 := r3 + 1 
+        r4 := r1
+
+        .temp r1,r6,r7
+        if (r5 <s valuestack) r4 := waiting      //pass check2 return to caller
+                                                // else return to waiting
+        pop r4 off stack r2
+        pop r5 off stack r2
+        goto r4

@@ -1,0 +1,26 @@
+#
+# Homework 8:RPN Calc
+# 4/30/18
+# Andres Fuentes and Ruchelly Almeida
+# main.ums: 
+#
+      .zero r0
+      .temps r6, r7
+
+      .section text
+
+main:
+      push r1 on stack r2                 // Address main returns to
+      push r3 on stack r2                 // Callee saves non-volatile reg
+      push r4 on stack r2   
+
+      push r0 on stack r3
+      goto neg linking r1
+      push 34 on stack r3
+      goto add linking r1 
+      goto outputval linking r1 
+
+      pop r4 off stack r2
+      pop r3 off stack r2
+      pop r5 off stack r2
+      goto r5

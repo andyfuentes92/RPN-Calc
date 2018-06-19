@@ -1,0 +1,46 @@
+#
+# Homework 8:RPN Calc
+# 4/30/18
+# Andres Fuentes and Ruchelly Almeida
+# main.ums: 
+#
+      .zero r0
+      .temps r6, r7
+
+      .section text
+
+//
+// main program for fact main
+// prints the factorials for [10 .. 1]
+//
+
+main:
+      push r1 on stack r2                 // Address main returns to
+      push r3 on stack r2                 // Callee saves non-volatile reg
+      push r4 on stack r2           
+      
+      push 1 on stack r3                 // add 1 to val stack
+      push 81 on stack r3                // add 81 to val stack
+      goto add linking r1
+      goto outputval linking r1          // 82 (R)
+
+      push 1 on stack r3
+      goto mult linking r1
+      goto outputval linking r1          // 82 (R)
+
+      push 166 on stack r3
+      goto sub linking r1
+      goto outputval linking r1          // 84 (T)
+
+      push 2772 on stack r3              
+      goto add linking r1
+      goto outputval linking r1          // -33 (!)
+
+      push 66 on stack r3
+      goto add linking r1
+      goto outputval linking r1          // 33 (!)
+
+      pop r4 off stack r2
+      pop r3 off stack r2
+      pop r5 off stack r2
+      goto r5

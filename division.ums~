@@ -1,0 +1,53 @@
+#
+# Homework 8:RPN Calc
+# 4/30/18
+# Andres Fuentes and Ruchelly Almeida
+# main.ums: 
+#
+      .zero r0
+      .temps r6, r7
+
+      .section text
+
+main:
+      push r1 on stack r2                 // Address main returns to
+      push r3 on stack r2                 // Callee saves non-volatile reg
+      push r4 on stack r2           
+      
+      push -84 on stack r3               // add 1 to val stack
+      push -1 on stack r3                // add 84 to val stack
+      goto div linking r1
+      goto outputval linking r1          // 84 (T)
+
+      pop stack r3 
+      push -6 on stack r3
+      push 3 on stack r3 
+      goto div linking r1                // expected -2 on stack
+
+      push 86 on stack r3
+      goto add linking r1 
+      goto outputval linking r1          // expected 84 (T) on stack
+
+      pop stack r3 
+      push 6 on stack r3
+      push -3 on stack r3 
+      goto div linking r1                // expected -2 on stack
+
+      push 86 on stack r3
+      goto add linking r1 
+      goto outputval linking r1          // expected 84 (T) on stack
+
+      pop stack r3
+      push 84 on stack r3
+      push 0 on stack r3
+      goto div linking r1                // expected "Error: cannot...."
+
+      goto add linking r1                // should add 0 + 84 
+      goto outputval linking r1          //checking that division params stayed
+      
+      
+
+      pop r4 off stack r2
+      pop r3 off stack r2
+      pop r5 off stack r2
+      goto r5

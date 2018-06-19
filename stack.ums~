@@ -1,0 +1,68 @@
+#
+# Homework 8:RPN Calc
+# 4/30/18
+# Andres Fuentes and Ruchelly Almeida
+# stack.ums: initializes our RPN calc program
+#
+        .zero  r0
+        .temps r6, r7
+        .section init
+         r1 := 0
+
+#
+# _ustart initializes stack pointer and calls main()
+# using the regular calling conventions.
+# halts after main() returns.
+#
+# Space for the stack is allocated below.
+#
+      .section init
+_ustart:
+      r0 := 0
+      r2 := endstack
+      r3 := valuestack
+      goto JTloop
+      
+#
+# Allocate space (100,000 words) for call stack
+# Label endstack is address of first word *after* the call stack
+#
+      .section stk
+      .space 100000
+endstack:
+
+      .space 10000
+valuestack:
+
+      .section rodata
+      .space 256
+jumptable:
+
+      .section init
+JTloop:
+      if (r1 == 255) goto finish using r4
+      r5 := jumptable + r1
+      m[r0][r5] := input_error
+      r1 := r1 + 1
+      goto JTloop
+
+finish:
+      m[r0][jumptable + '0'] := n
+      m[r0][jumptable + '1'] := n
+      m[r0][jumptable + '2'] := n
+      m[r0][jumptable + '3'] := n
+      m[r0][jumptable + '4'] := n
+      m[r0][jumptable + '5'] := n
+      m[r0][jumptable + '6'] := n
+      m[r0][jumptable + '7'] := n
+      m[r0][jumptable + '8'] := n
+      m[r0][jumptable + '9'] := n
+      m[r0][jumptable + '\n'] := newline
+      m[r0][jumptable + '+'] := add
+      m[r0][jumptable + '-'] := sub
+      m[r0][jumptable + '*'] := mult
+      m[r0][jumptable + '/'] := div
+      m[r0][jumptable + '~'] := neg
+
+      goto waiting
+

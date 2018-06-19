@@ -1,0 +1,65 @@
+#
+# Homework 8:RPN Calc
+# 4/30/18
+# Andres Fuentes and Ruchelly Almeida
+# calculator.ums: module that holds our calculator
+#
+        .zero r0
+        .temps r6,r7
+
+        .section text
+
+input_error:
+        output "Error: unknown char\n"
+        goto waiting
+
+n:
+        r1 := r1 - '0'
+        push r1 on stack r3
+        goto entering
+
+entering:
+        r1 := input()
+        .temp r4,r6,r7
+
+        if (r1 >=s '0') goto if1
+        goto else1
+if1:
+        if (r1 <=s '9') goto makenumber
+else1:
+        .temp r6,r7
+
+        goto waiting_with_character    // else go to waiting with char
+
+makenumber:
+        r5 := m[r0][r3]
+        pop stack r3
+        r5 := r5 * 10
+        r5 := r5 + r1
+        r5 := r5 - 48
+
+        push r5 on stack r3
+        goto entering 
+
+main:
+        output "in main"
+waiting:
+        r1 := input()
+
+waiting_with_character:
+        r5 := ~r1
+        .temps r4,r6,r7
+        if (r5 == 0) goto exit 
+        .temps r6,r7
+
+        r5 := jumptable + r1
+        r5 := m[r0][r5]
+        goto r5
+add:
+sub:
+mult:
+div:
+neg:
+
+exit:
+        halt

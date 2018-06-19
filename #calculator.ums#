@@ -1,0 +1,174 @@
+#
+# Homework 8:RPN Calc
+# 4/30/18
+# Andres Fuentes and Ruchelly Almeida
+# calculator.ums: module that holds our calculator
+#
+        .zero r0
+        .temps r6,r7
+
+        .section text
+
+input_error:
+        output "Error: unknown char\n"
+        goto waiting
+
+n:
+        r1 := r1 - '0'
+        push r1 on stack r3
+        goto entering
+
+entering:
+        r1 := input()
+        .temp r4,r6,r7
+
+        if (r1 >=s '0') goto if1
+        goto else1
+if1:
+        if (r1 <=s '9') goto makenumber
+else1:
+        .temp r6,r7
+
+        goto waiting_with_character    // else go to waiting with char
+
+makenumber:
+        r5 := m[r0][r3]
+        pop stack r3
+        r5 := r5 * 10
+        r5 := r5 + r1
+        r5 := r5 - 48
+
+        push r5 on stack r3
+        goto entering 
+
+main:
+        output "in main"
+waiting:
+        r1 := input()
+
+waiting_with_character:
+        r5 := ~r1
+        .temps r4,r6,r7
+        if (r5 == 0) goto exit 
+        .temps r6,r7
+
+        r5 := jumptable + r1
+        r5 := m[r0][r5]
+        goto r5
+################################ add    ########################################
+add:
+      output "in add function"
+      //push r1 on stack r2  
+      push r4 on stack r2  
+
+      //goto check1 linking r1 
+      r1 := m[r0][r3]                  //r4 (top value on value stack)
+      r4 := m[r0][r3+1]                //r3 (top+1 value on value stack)
+      r1 := r1 + r4                 
+                 
+      pop stack r3                     
+      pop stack r3
+      push r1 on stack r3              
+
+      pop r4 off stack r2 
+      //pop r5 off stack r2               //pop return address (r1) off into r5
+      
+      goto waiting                       // go back to main loop
+
+############################## sub     ########################################
+sub:
+      //push r1 on stack r2
+      push r4 on stack r2  
+      
+      r1 := m[r0][r3]                    //r4 (top val on value stack)
+      r4 := m[r0][r3+1]                  //r3 (top+1 val on value stack)
+      r1 := r1 - r4         
+      pop stack r3                     
+      pop stack r3
+      push r1 on stack r3  
+
+      pop r4 off stack r2                // restore non-volatile registers
+      //pop r5 off stack r2              //pop return address (r1) off into r5
+      
+      goto waiting                       // goto return address
+
+################################ mult  ########################################
+mult:
+      //push r1 on stack r2  
+      push r4 on stack r2  
+      
+      r1 := m[r0][r3]                    //r4 (top val on value stack)
+      r4 := m[r0][r3+1]                  //r3 (top+1 val on value stack)
+      r1 := r1 * r4         
+      pop stack r3                     
+      pop stack r3
+      push r1 on stack r3  
+
+      pop r4 off stack r2               // restore non-volatile registers
+      //pop r5 off stack r2             //pop return address (r1) off into r5
+      
+      goto waiting                      // goto return address
+
+################################ div  ##########################################
+div:
+      //push r1 on stack r2
+      push r4 on stack r2  
+      
+      r1 := m[r0][r3]                    //r4 (top val on value stack (y))
+      r4 := m[r0][r3+1]                  //r3 (top+1 val on value stack (x))
+
+      if (r1 == 0) goto diverr           //check r4 (y) if zero
+
+.temp r5,r6,r7
+      if (r1 <s 0) goto divnegR1
+      if (r4 <s 0) goto divnegR4
+
+divpos:
+      r1 := r4 / r1                      // + / + = + 
+      goto divstack
+divnegR1:
+      if (r4 <s 0) goto divnegneg        // r1 - r4 -
+      r1 := ~r1
+      r1 := r1 + 1                       // make r1 pos
+      goto divnegpos                     // r1 + r4 +
+
+divnegR4:
+      if (r1 <s 0) goto divnegneg        // r1 - r4 -
+      r4 := ~r4
+      r4 := r4 + 1                       // make r4 positive
+      goto divnegpos                     // r1 + r4 +
+
+divnegneg:
+      r1 := r1 nand r1
+      r1 := r1 + 1 
+      r4 := r4 nand r4
+      r4 := r4 + 1
+      r1 := r4 / r1
+      goto divstack
+
+divnegpos:
+       r1 := r4 / r1
+       r1 := r1 nand r1
+       r1 := r1 + 1 
+       goto divstack
+
+diverr:
+      output "Error: Cannot divide by zero\n"
+      goto enddiv
+
+divstack:
+      pop stack r3                     
+      pop stack r3
+      push r1 on stack r3  
+      goto enddiv
+
+enddiv:
+      .temp r6,r7
+      pop r4 off stack r2               // restore non-volatile registers
+      //pop r5 off stack r2             //pop return address (r1) off into r5
+      
+      goto waiting                      // goto return address
+
+
+exit:
+        halt
